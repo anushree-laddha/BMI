@@ -36,6 +36,7 @@
             position: relative;
             z-index: 1;
             transform-style: preserve-3d;
+            transition: transform 0.3s ease;
         }
         
         .card::before {
@@ -50,6 +51,11 @@
             z-index: -1;
             transform: translateZ(-10px);
             filter: blur(10px);
+        }
+        
+        .rotate-element {
+            transform: translateZ(20px);
+            transition: transform 0.3s ease;
         }
         
         h1 {
@@ -118,6 +124,7 @@
             transform: translateZ(20px);
             text-align: center;
             display: none;
+            transition: all 0.3s ease;
         }
         
         .bmi-value {
@@ -170,12 +177,27 @@
             transition: all 0.3s ease;
         }
 
+        /* Added mobile responsiveness */
+        @media (max-width: 480px) {
+            .container {
+                width: 90%;
+                max-width: 400px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
-            <h1 class="rotate-element">BMI Calculator</h1>
+            <h1>BMI Calculator</h1>
             <div class="input-group">
                 <label for="weight">Weight (kg)</label>
                 <input type="number" id="weight" placeholder="Enter your weight in kg" step="0.1" min="0">
@@ -196,6 +218,27 @@
     </div>
 
     <script>
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners for 3D rotation effect
+            const card = document.querySelector('.card');
+            const container = document.querySelector('.container');
+            
+            // Only apply 3D effects if not on a mobile device
+            if (window.innerWidth > 768) {
+                document.addEventListener('mousemove', function(e) {
+                    const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
+                    const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+                    card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+                });
+                
+                // Reset transform when mouse leaves
+                container.addEventListener('mouseleave', function() {
+                    card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+                });
+            }
+        });
+        
         function calculateBMI() {
             const weight = parseFloat(document.getElementById('weight').value);
             const heightInFeet = parseFloat(document.getElementById('height').value);
@@ -237,21 +280,10 @@
                 document.getElementById('category').className = 'bmi-category ' + categoryClass;
                 document.getElementById('indicator').style.left = position + '%';
                 document.getElementById('result').style.display = 'block';
-                
-                // Add 3D effect to result card
-                document.getElementById('result').classList.add('rotate-element');
+            } else {
+                alert('Please enter valid weight and height values');
             }
         }
-        
-        // Add event listeners for 3D rotation effect
-        const card = document.querySelector('.card');
-        
-        document.addEventListener('mousemove', function(e) {
-            const xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-            const yAxis = (window.innerHeight / 2 - e.pageY) / 25;
-            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
-        });
-
     </script>
 </body>
 </html>
